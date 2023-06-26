@@ -279,17 +279,6 @@ MY_INIT_TASKS: list[tuple[str, tuple[str, ...], int]] = [
     ("superset", ("aspects", "jobs", "init", "superset", "init-superset.sh"), 93),
     ("lms", ("aspects", "jobs", "init", "superset", "init-openedx.sh"), 94),
     ("clickhouse", ("aspects", "jobs", "init", "clickhouse", "init-clickhouse.sh"), 95),
-    (
-        "clickhouse",
-        (
-            "aspects",
-            "jobs",
-            "init",
-            "clickhouse",
-            "aspects_init_schemas_tables_users.sh",
-        ),
-        96,
-    ),
     ("aspects", ("aspects", "jobs", "init", "dbt", "init-dbt.sh"), 97),
 ]
 
@@ -357,7 +346,7 @@ hooks.Filters.IMAGES_PUSH.add_items(
         (
             "aspects",
             "{{DOCKER_IMAGE_ASPECTS}}",
-        )
+        ),
     ]
 )
 
