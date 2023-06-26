@@ -31,7 +31,7 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
         ("RUN_CLICKHOUSE", True),
         ("RUN_RALPH", True),
         ("RUN_SUPERSET", True),
-        ("DOCKER_IMAGE_ASPECTS", "python:3.8"),
+        ("DOCKER_IMAGE_ASPECTS", "edunext/aspects:{{ ASPECTS_VERSION }}"),
         ("DOCKER_IMAGE_CLICKHOUSE", "clickhouse/clickhouse-server:23.3"),
         ("DOCKER_IMAGE_RALPH", "fundocker/ralph:3.8.0"),
         ("DOCKER_IMAGE_SUPERSET", "edunext/aspects-superset:{{ ASPECTS_VERSION }}"),
@@ -161,7 +161,7 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
         ("DBT_REPOSITORY_PATH", "aspects-dbt/aspects"),
         # This is a pip compliant list of Python packages to install to run dbt
         # make sure packages with versions are enclosed in double quotes
-        ("DBT_PACKAGES", '"dbt-core==1.4.0" "dbt-clickhouse==1.4.1"'),
+        ("EXTRA_DBT_PACKAGES", []),
         # If set, DDL/table operations will be executed with the `ON CLUSTER` clause
         # using this cluster. This has not been tested with Aspects and is unlikely to
         # work.
@@ -320,6 +320,12 @@ hooks.Filters.IMAGES_BUILD.add_items(
             "{{DOCKER_IMAGE_SUPERSET}}",
             (),
         ),
+        (
+            "aspects",
+            ("plugins", "aspects", "build", "aspects"),
+            "{{DOCKER_IMAGE_ASPECTS}}",
+            (),
+        ),
     ]
 )
 
@@ -331,6 +337,10 @@ hooks.Filters.IMAGES_PULL.add_items(
         (
             "aspects-superset",
             "{{DOCKER_IMAGE_SUPERSET}}",
+        ),
+        (
+            "aspects",
+            "{{DOCKER_IMAGE_ASPECTS}}",
         ),
     ]
 )
@@ -344,6 +354,10 @@ hooks.Filters.IMAGES_PUSH.add_items(
             "aspects-superset",
             "{{DOCKER_IMAGE_SUPERSET}}",
         ),
+        (
+            "aspects",
+            "{{DOCKER_IMAGE_ASPECTS}}",
+        )
     ]
 )
 

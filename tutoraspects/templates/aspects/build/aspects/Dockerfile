@@ -1,12 +1,5 @@
-# Superset image with additional database drivers
-# https://hub.docker.com/r/apache/superset
-# https://github.com/apache/superset/releases
-# https://github.com/apache/superset/blob/master/Dockerfile
-# https://superset.apache.org/docs/databases/installing-database-drivers
-FROM python3.8
+FROM python:3.8
 
-USER root
+RUN pip install dbt-core==1.4.0 dbt-clickhouse==1.4.1 pandas
 
-#COPY ./requirements.txt /app/requirements.txt
-
-RUN echo "Hi"
+RUN pip install git+https://github.com/openedx/xapi-db-load@0.2#egg=xapi-db-load==0.2
