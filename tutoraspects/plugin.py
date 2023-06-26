@@ -34,7 +34,7 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
         ("DOCKER_IMAGE_ASPECTS", "python:3.8"),
         ("DOCKER_IMAGE_CLICKHOUSE", "clickhouse/clickhouse-server:23.3"),
         ("DOCKER_IMAGE_RALPH", "fundocker/ralph:3.8.0"),
-        ("DOCKER_IMAGE_SUPERSET", "apache/superset:2.0.1"),
+        ("DOCKER_IMAGE_SUPERSET", "edunext/aspects-superset:{{ ASPECTS_VERSION }}"),
         ("DOCKER_IMAGE_VECTOR", "timberio/vector:0.30.0-alpine"),
         (
             "OPENEDX_EXTRA_PIP_REQUIREMENTS",
@@ -69,10 +69,6 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
         ("ASPECTS_VECTOR_RAW_TRACKING_LOGS_TABLE", "_tracking"),
         ("ASPECTS_VECTOR_RAW_XAPI_TABLE", "xapi_events_all"),
         # Make sure LMS / CMS have event-routing-backends installed
-<<<<<<< HEAD
-=======
-        
->>>>>>> 218d7df (fix: remove unused variables, do clean up work)
         ######################
         # ClickHouse Settings
         ("CLICKHOUSE_HOST", "clickhouse"),
@@ -116,6 +112,7 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
         ("SUPERSET_DB_PORT", "{{ MYSQL_PORT }}"),
         ("SUPERSET_DB_NAME", "superset"),
         ("SUPERSET_DB_USERNAME", "superset"),
+        ("SUPERSET_EXTRA_REQUIREMENTS", []),
         ("SUPERSET_OAUTH2_ACCESS_TOKEN_PATH", "/oauth2/access_token/"),
         ("SUPERSET_OAUTH2_AUTHORIZE_PATH", "/oauth2/authorize/"),
         (
@@ -294,17 +291,6 @@ MY_INIT_TASKS: list[tuple[str, tuple[str, ...], int]] = [
         96,
     ),
     ("aspects", ("aspects", "jobs", "init", "dbt", "init-dbt.sh"), 97),
-    (
-        "superset",
-        ("aspects", "jobs", "init", "superset", "superset-init-security.sh"),
-        99,
-    ),
-    ("lms", ("aspects", "jobs", "init", "lms", "configure-aspects-lms.sh"), 100),
-    (
-        "superset",
-        ("aspects", "jobs", "init", "superset", "superset-api-dashboard.sh"),
-        101,
-    ),
 ]
 
 # For each task added to MY_INIT_TASKS, we load the task template
@@ -328,15 +314,12 @@ for service, template_path, priority in MY_INIT_TASKS:
 #     ("<tutor_image_name>", ("path", "to", "build", "dir"), "<docker_image_tag>", "<build_args>")
 hooks.Filters.IMAGES_BUILD.add_items(
     [
-        # To build `myimage` with `tutor images build myimage`,
-        # you would add a Dockerfile to templates/aspects/build/myimage,
-        # and then write:
-        ### (
-        ###     "myimage",
-        ###     ("plugins", "aspects", "build", "myimage"),
-        ###     "docker.io/myimage:{{ ASPECTS_VERSION }}",
-        ###     (),
-        ### ),
+        (
+            "aspects-superset",
+            ("plugins", "aspects", "build", "aspects-superset"),
+            "{{DOCKER_IMAGE_SUPERSET}}",
+            (),
+        ),
     ]
 )
 
@@ -345,11 +328,10 @@ hooks.Filters.IMAGES_BUILD.add_items(
 #     ("<tutor_image_name>", "<docker_image_tag>")
 hooks.Filters.IMAGES_PULL.add_items(
     [
-        # To pull `myimage` with `tutor images pull myimage`, you would write:
-        ### (
-        ###     "myimage",
-        ###     "docker.io/myimage:{{ ASPECTS_VERSION }}",
-        ### ),
+        (
+            "aspects-superset",
+            "{{DOCKER_IMAGE_SUPERSET}}",
+        ),
     ]
 )
 
@@ -358,11 +340,10 @@ hooks.Filters.IMAGES_PULL.add_items(
 #     ("<tutor_image_name>", "<docker_image_tag>")
 hooks.Filters.IMAGES_PUSH.add_items(
     [
-        # To push `myimage` with `tutor images push myimage`, you would write:
-        ### (
-        ###     "myimage",
-        ###     "docker.io/myimage:{{ ASPECTS_VERSION }}",
-        ### ),
+        (
+            "aspects-superset",
+            "{{DOCKER_IMAGE_SUPERSET}}",
+        ),
     ]
 )
 

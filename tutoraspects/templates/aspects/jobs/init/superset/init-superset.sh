@@ -22,12 +22,7 @@
 
 set -e
 
-#
-# Always install local overrides first
-#
-/usr/bin/env bash /app/docker/docker-bootstrap.sh
-
-STEP_CNT=3
+STEP_CNT=5
 
 echo_step() {
 cat <<EOF
@@ -68,3 +63,35 @@ echo_step "2" "Complete" "Setting up admin user"
 echo_step "3" "Starting" "Setting up roles and perms"
 superset fab import-roles -p /app/security/roles.json
 echo_step "3" "Complete" "Setting up roles and perms"
+
+
+# Set up a Row-Level Security filter to enforce course-based access restrictions.
+# Note: there are no cli commands or REST API endpoints to help us with this,
+# so we have to pipe python code directly into the superset shell. Yuck!
+echo_step "4" "Starting" "Setup row level security filters"
+python /app/pythonpath/create_row_level_security.py
+echo_step "4" "Complete" "Setup row level security filters"
+# The blank line above EOF is critical -- don't remove it.
+# And we can't have any indented blank lines for some reason, with code piped into the superset shell
+
+
+echo_step "5" "Starting" "Importing assets"
+
+cd /app/assets/
+rm -rf /app/assets/superset
+python /app/pythonpath/create_assets.py
+
+date=$(date -u +"%Y-%m-%dT%H:%M:%S.%6N+00:00") 
+
+echo "version: 1.0.0
+type: Dashboard
+timestamp: '$date'" > superset/metadata.yaml
+
+zip -r superset.zip superset
+
+echo "\n\nImporting zip file\n\n"
+superset import-dashboards -p superset.zip
+
+rm -rf /app/assets/superset
+rm -rf /app/assets/superset.zip
+echo_step "5" "Complete" "Importing assets"
