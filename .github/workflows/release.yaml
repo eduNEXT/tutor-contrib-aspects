@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+env:
+  TUTOR_ROOT: ./.ci/
+
 jobs:
   release:
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'bot/v')
