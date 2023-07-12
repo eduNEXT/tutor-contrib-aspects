@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v0.4.1 - 2023-07-12
+
+### [0.4.1](https://github.com/eduNEXT/tutor-contrib-aspects/compare/v0.4.0...v0.4.1) (2023-07-12)
+
+### Bug Fixes
+
+- SQL error in video segments chart ([3a62f7e](https://github.com/eduNEXT/tutor-contrib-aspects/commit/3a62f7ee17b87235256825efc35f6ba886391d53))
+
+### Build Systems
+
+- build docker images on release created ([dce132f](https://github.com/eduNEXT/tutor-contrib-aspects/commit/dce132f32c4cda87be742f1746bae245562b0047))
+- update event listener to build docker image ([e46161d](https://github.com/eduNEXT/tutor-contrib-aspects/commit/e46161d74aa5f1efe53b80aa034560edb3b4beeb))
+
 ## v0.14.1 - 2023-07-12
 
 ### [0.14.1](https://github.com/openedx/tutor-contrib-aspects/compare/v0.14.0...v0.14.1) (2023-07-12)
