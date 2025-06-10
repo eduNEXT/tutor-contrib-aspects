@@ -1,0 +1,84 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-center">{{ title }}</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <!-- OAuth Providers (OpenEdx SSO) -->
+                    {% if providers %}
+                        <div class="oauth-providers mb-4">
+                            <h5 class="text-center mb-3">Single Sign-On</h5>
+                            {% for provider in providers %}
+                                <a href="{{ url_for('HybridAuthView.oauth_authorize', provider=provider.name) }}" 
+                                   class="btn btn-primary btn-lg btn-block mb-2 d-grid">
+                                    <i class="{{ provider.icon }} me-2"></i>
+                                    Login with {{ provider.name|title }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if show_db_login %}
+                            <div class="text-center my-3">
+                                <hr class="my-3">
+                                <small class="text-muted">or use local account</small>
+                                <hr class="my-3">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <!-- Database Login Form -->
+                    {% if show_db_login %}
+                        <div class="db-login">
+                            <h5 class="text-center mb-3">Local Account Login</h5>
+                            <form method="POST">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg d-grid w-100">
+                                    Login
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Debug: Log available endpoints
+console.log("Current URL:", window.location.href);
+console.log("Available OAuth providers:", {{ providers|tojson if providers else '[]' }});
+
+// Debug: Log OAuth URLs
+{% if providers %}
+    {% for provider in providers %}
+        console.log("OAuth URL for {{ provider.name }}:", "{{ url_for('HybridAuthView.oauth_authorize', provider=provider.name) }}");
+    {% endfor %}
+{% endif %}
+</script>
+{% endblock %}
