@@ -10,6 +10,7 @@ import typing as t
 
 import bcrypt
 import importlib_resources
+import pkg_resources
 from tutor import hooks
 
 from .__about__ import __version__
@@ -20,6 +21,11 @@ from .commands_v1 import DO_COMMANDS as TUTOR_V1_DO_COMMANDS
 ########################################
 # CONFIGURATION
 ########################################
+
+# Add assets directory to build context
+hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(
+    pkg_resources.resource_filename("tutoraspects", "assets")
+)
 
 hooks.Filters.CONFIG_DEFAULTS.add_items(
     [
