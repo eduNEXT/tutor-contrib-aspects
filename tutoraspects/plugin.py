@@ -21,10 +21,6 @@ from .commands_v1 import DO_COMMANDS as TUTOR_V1_DO_COMMANDS
 # CONFIGURATION
 ########################################
 
-# Add assets directory to build context
-assets_path = str(importlib_resources.files("tutoraspects") / "assets")
-hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(assets_path)
-
 hooks.Filters.CONFIG_DEFAULTS.add_items(
     [
         # Add your new settings that have default values here.
@@ -581,6 +577,19 @@ hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
         ("aspects/build", "plugins"),
         ("aspects/apps", "plugins"),
     ],
+)
+
+########################################
+# ASSETS RENDERING
+# (It is safe & recommended to leave
+#  this section as-is :)
+########################################
+
+hooks.Filters.ENV_TEMPLATE_ROOTS.add_items(
+    # Root paths for template files, relative to the project root.
+    [
+        str(importlib_resources.files("tutoraspects") / "assets"),
+    ]
 )
 
 ########################################
