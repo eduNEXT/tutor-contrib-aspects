@@ -35,6 +35,6 @@ RUN apt-get update -q \
 COPY ./openedx-assets /app/openedx-assets
 COPY ./localization/ /app/localization/
 # Add custom login template
-COPY ./custom_login/ /app/superset/templates/appbuilder/general/custom_login/
+COPY ./assets/custom_login/ /app/superset/templates/appbuilder/general/custom_login/
 
 USER superset
