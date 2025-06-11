@@ -36,7 +36,7 @@ COPY ./openedx-assets /app/openedx-assets
 COPY ./localization/ /app/localization/
 
 # Add custom login template
-COPY .assets/custom_login/ /app/superset/templates/appbuilder/general/custom_login/
+COPY ./custom_login/ /app/superset/templates/appbuilder/general/custom_login/
 RUN chown -R superset:superset /app/superset/templates/appbuilder/general/custom_login/
 
 USER superset

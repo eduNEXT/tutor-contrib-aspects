@@ -554,6 +554,13 @@ hooks.Filters.IMAGES_PUSH.add_items(
     ]
 )
 
+# Add custom files to the build context
+hooks.Filters.IMAGES.add_items([
+    ("aspects-superset", [
+        ("custom_login", "assets/custom_login"),
+    ])
+])
+
 ########################################
 # TEMPLATE RENDERING
 # (It is safe & recommended to leave
@@ -585,12 +592,12 @@ hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
 #  this section as-is :)
 ########################################
 
-hooks.Filters.ENV_TEMPLATE_ROOTS.add_items(
-    # Root paths for template files, relative to the project root.
-    [
-        str(importlib_resources.files("tutoraspects") / "assets"),
-    ]
-)
+#hooks.Filters.ENV_TEMPLATE_ROOTS.add_items(
+#    # Root paths for template files, relative to the project root.
+#    [
+#        str(importlib_resources.files("tutoraspects") / "assets"),
+#    ]
+#)
 
 ########################################
 # PATCH LOADING
