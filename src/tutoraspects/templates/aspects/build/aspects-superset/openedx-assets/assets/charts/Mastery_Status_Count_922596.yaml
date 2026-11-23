@@ -3,24 +3,36 @@ cache_timeout: null
 certification_details: null
 certified_by: null
 dataset_uuid: 6012b2ac-11d5-50b0-be49-2f73f91fcfa3
-description: Learners by mastery status
+description: |-
+  Learners by mastery status.
+
+  **Limitations**
+
+  - Counted per course: a learner who demonstrated a competency in one course and not in another counts once in each of those statuses, so a bar can add up to more learners than the competency has.
+  - A learner with a status for a competency but no enrollment in a course that assesses it counts with their overall competency status, which is never Not Demonstrated.
 params:
   adhoc_filters: []
   annotation_layers: []
   color_scheme: aspects_default
   extra_form_data: {}
-  groupby:
-  - status
+  label_colors:
+    Available: '#CBD5E1'
+    Partially Attempted: '#0A67A3'
+    Not Demonstrated: '#741420'
+    Demonstrated: '#3FA36F'
+  groupby: []
   legendOrientation: top
   legendType: scroll
   metrics:
-  - learners
+  - Available
+  - Partially Attempted
+  - Not Demonstrated
+  - Demonstrated
   orientation: vertical
   rich_tooltip: true
   row_limit: 10000
   show_empty_columns: true
   show_legend: true
-  sort_series_type: name
   stack: Stack
   truncateXAxis: false
   truncateYAxis: false

@@ -3,25 +3,36 @@ cache_timeout: null
 certification_details: null
 certified_by: null
 dataset_uuid: 6012b2ac-11d5-50b0-be49-2f73f91fcfa3
-description: Share of enrolled learners in each status
+description: |-
+  Share of enrolled learners in each status.
+
+  **Limitations**
+
+  - Counted per course (see 1.1): a learner can count in more than one status, so each share is of the status counts for that competency, not of distinct learners.
 params:
   adhoc_filters: []
   annotation_layers: []
   color_scheme: aspects_default
   contributionMode: row
   extra_form_data: {}
-  groupby:
-  - status
+  label_colors:
+    Available: '#CBD5E1'
+    Partially Attempted: '#0A67A3'
+    Not Demonstrated: '#741420'
+    Demonstrated: '#3FA36F'
+  groupby: []
   legendOrientation: top
   legendType: scroll
   metrics:
-  - learners
+  - Available
+  - Partially Attempted
+  - Not Demonstrated
+  - Demonstrated
   orientation: vertical
   rich_tooltip: true
   row_limit: 10000
   show_empty_columns: true
   show_legend: true
-  sort_series_type: name
   truncateXAxis: false
   truncateYAxis: false
   truncate_metric: true

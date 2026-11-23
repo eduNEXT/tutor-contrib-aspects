@@ -103,6 +103,14 @@ EXTRA_CATEGORICAL_COLOR_SCHEMES = [
 "description": 'Aspects color scheme',
 "label": 'Aspects',
 "colors": ['#29A399', '#7B144D', '#F4661F', "#C9CB24", '#9F81CF', '#11406A']
+},
+# One colour: the Demonstrated status colour of the Competency dashboard, for
+# charts that only cover demonstrated competencies (Time to Mastery).
+{
+"id": 'aspects_competency_demonstrated',
+"description": 'Competency Demonstrated status colour',
+"label": 'Aspects Competency Demonstrated',
+"colors": ['#3FA36F']
 }
 ]
 

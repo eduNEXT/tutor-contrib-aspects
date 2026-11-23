@@ -1,12 +1,20 @@
-_file_name: Learner_Competency_Mastery_a0e65b.yaml
+_file_name: Mastery_Progress_Overview_a0e65b.yaml
 cache_timeout: null
 certification_details: null
 certified_by: null
 dataset_uuid: 6012b2ac-11d5-50b0-be49-2f73f91fcfa3
-description: One row per learner and competency. Hidden when PII is off.
+description: |-
+  One row per learner, competency and course.
+
+  **Limitations**
+
+  - Assessment Snapshot: `<missing data #2>`. Needs the per-assessment status of each learner, which no sink sends yet.
+  - Status, First Attempt and Mastery Date are per course: a learner appears once for each course that assesses the competency.
+  - The Status dropdown and the search box from the mockup are replaced by the dashboard's Status filter and the table search.
 params:
   adhoc_filters: []
   allow_rearrange_columns: true
+  allow_render_html: true
   annotation_layers: []
   color_scheme: aspects_default
   column_config:
@@ -20,7 +28,9 @@ params:
   - username
   - email
   - competency_path
-  - status
+  - course_name
+  - status_display
+  - assessment_snapshot
   include_search: true
   metrics:
   - first_attempt
@@ -30,13 +40,14 @@ params:
   page_length: 10
   query_mode: aggregate
   row_limit: 10000
-  server_pagination: false
+  server_pagination: true
+  server_page_length: 10
   show_cell_bars: false
   table_timestamp_format: '%b %-d, %Y'
-  timeseries_limit_metric: null
+  timeseries_limit_metric: status_order
   viz_type: table
 query_context: null
-slice_name: Learner Competency Mastery
+slice_name: Mastery Progress Overview
 tags:
 - original
 uuid: a0e65b39-e03f-5b8c-af91-c08f3c456f96

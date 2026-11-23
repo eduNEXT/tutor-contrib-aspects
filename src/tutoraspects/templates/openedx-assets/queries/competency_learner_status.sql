@@ -9,12 +9,13 @@
 -- demonstrate it in another course.
 -- - course_status is the learner's status in that row's course, from the
 -- course-level criteria group: all four states, Not Demonstrated included.
--- - status is what the charts show: course_status when the Course filter selects
--- exactly one course, competency_status otherwise. So Not Demonstrated appears
--- only once the dashboard is scoped to one course.
---
--- Count learners with COUNT(DISTINCT actor_id): the competency status repeats on
--- every course row, and a Course filter keeps the learners enrolled in that course.
+-- - status is what the charts show: always the per-course status. A learner who
+-- demonstrated a competency in one course and not in another shows both
+-- statuses, one per course row. Rows without a course fall back to
+-- competency_status.
+-- - status_rank orders the statuses by effort: Available (1), Partially
+-- Attempted (2), Not Demonstrated (3), Demonstrated (4).
+-- - first_status_at, mastered_at and first_attempt_at are per course too.
 with
     competency_taxonomies as (
         select id as taxonomy_id
@@ -114,7 +115,7 @@ with
     ),
     course_statuses as (
         -- Latest status per learner x competency x course run.
-        select actor_id, tag_id, course_key, status_id
+        select actor_id, tag_id, course_key, status_id, created, modified
         from
             {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_learner_most_recent_competency_course_status final
     ),
@@ -129,17 +130,20 @@ with
             not in (select actor_id, tag_id from learner_competency_courses)
     ),
     first_activity as (
-        -- First xAPI event on content tagged with the competency: the tagged
-        -- block itself, or anything inside a tagged section or subsection.
+        -- First xAPI event, per course, on content tagged with the competency:
+        -- the tagged block itself, or anything inside a tagged section or
+        -- subsection.
         select
             events.actor_id as actor_id,
             tagged_content.tag_id as tag_id,
+            events.course_key as course_key,
             min(events.emission_time) as first_activity_at
         from
             (
                 -- The block id, without any trailing path such as /answer.
                 select
                     actor_id,
+                    course_key,
                     extract(object_id, '/xblock/([^/]+)') as block_id,
                     emission_time
                 from {{ ASPECTS_XAPI_DATABASE }}.xapi_events_all_parsed
@@ -158,7 +162,7 @@ with
             ) as blocks
             on blocks.block_id = events.block_id
         inner join tagged_content on tagged_content.object_id = blocks.container_id
-        group by events.actor_id, tagged_content.tag_id
+        group by events.actor_id, tagged_content.tag_id, events.course_key
     ),
     learner_rows as (
         select
@@ -167,9 +171,11 @@ with
             lc.actor_id as actor_id,
             lc.tag_id as tag_id,
             s.status_id as competency_status_id,
-            s.created as created,
-            s.modified as modified,
-            cs.status_id as course_status_id
+            cs.status_id as course_status_id,
+            -- Per-course dates; rows without a course use the competency's.
+            if(lc.course_key = '', s.status_id, cs.status_id) as status_id,
+            if(lc.course_key = '', s.created, cs.created) as created,
+            if(lc.course_key = '', s.modified, cs.modified) as modified
         from learner_competencies as lc
         left join statuses as s on s.actor_id = lc.actor_id and s.tag_id = lc.tag_id
         left join
@@ -205,13 +211,18 @@ select
         'Not Demonstrated',
         'Available'
     ) as course_status,
-    {% raw -%}
-    {% if filter_values("course_name") | length == 1 %} course_status
-    {% else %} competency_status
-    {% endif %}
-    {%- endraw %} as status,
-    if(lr.competency_status_id = 0, null, lr.created) as first_status_at,
-    if(lr.competency_status_id = 30, lr.modified, null) as mastered_at,
+    if(lr.course_key = '', competency_status, course_status) as status,
+    multiIf(
+        status = 'Demonstrated',
+        4,
+        status = 'Not Demonstrated',
+        3,
+        status = 'Partially Attempted',
+        2,
+        1
+    ) as status_rank,
+    if(lr.status_id = 0, null, lr.created) as first_status_at,
+    if(lr.status_id = 30, lr.modified, null) as mastered_at,
     multiIf(
         fa.first_activity_at = toDateTime64(0, 6),
         first_status_at,
@@ -225,7 +236,11 @@ select
     users.email as email
 from learner_rows as lr
 inner join competencies as c on c.tag_id = lr.tag_id
-left join first_activity as fa on fa.actor_id = lr.actor_id and fa.tag_id = lr.tag_id
+left join
+    first_activity as fa
+    on fa.actor_id = lr.actor_id
+    and fa.tag_id = lr.tag_id
+    and fa.course_key = lr.course_key
 left join
     {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_course_names as names
     on names.course_key = lr.course_key

@@ -3,7 +3,13 @@ cache_timeout: null
 certification_details: null
 certified_by: null
 dataset_uuid: 6012b2ac-11d5-50b0-be49-2f73f91fcfa3
-description: Cumulative count of competencies demonstrated
+description: |-
+  Cumulative count of competencies demonstrated.
+
+  **Limitations**
+
+  - Counted per course: a competency a learner demonstrated in two courses counts twice.
+  - The mastery date is the last change of the course status. Core only raises statuses today, so for Demonstrated it is the date the status was reached.
 params:
   adhoc_filters:
   - clause: WHERE

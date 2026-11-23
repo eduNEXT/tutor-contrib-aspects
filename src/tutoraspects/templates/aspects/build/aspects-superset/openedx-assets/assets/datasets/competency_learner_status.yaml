@@ -134,6 +134,19 @@ columns:
   type: String
   verbose_name: Competency Status
 - advanced_data_type: null
+  column_name: status_rank
+  datetime_format: null
+  description: 'Status order by effort: 1 Available, 2 Partially Attempted, 3 Not Demonstrated, 4 Demonstrated'
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: UInt8
+  verbose_name: Status Order
+- advanced_data_type: null
   column_name: competency_status
   datetime_format: null
   description: null
@@ -250,6 +263,43 @@ columns:
   python_date_format: null
   type: String
   verbose_name: Email Address
+- advanced_data_type: null
+  column_name: status_display
+  datetime_format: null
+  description: Status with its colour, as HTML for tables
+  expression: |-
+    concat(
+        '<span style="color: ',
+        multiIf(
+            status = 'Demonstrated', '#3FA36F',
+            status = 'Not Demonstrated', '#741420',
+            status = 'Partially Attempted', '#0A67A3',
+            '#CBD5E1'
+        ),
+        '">&#9632;</span> ',
+        status
+    )
+  extra: {}
+  filterable: false
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Competency Status
+- advanced_data_type: null
+  column_name: assessment_snapshot
+  datetime_format: null
+  description: Placeholder until the per-assessment status sink exists (open task 2)
+  expression: '''&lt;missing data #2&gt;'''
+  extra: {}
+  filterable: false
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Assessment Snapshot
 currency_code_column: null
 database_uuid: 21174b6c-4d40-4958-8161-d6c3cf5e77b6
 default_endpoint: null
@@ -263,6 +313,51 @@ metrics:
 - currency: null
   d3format: null
   description: null
+  expression: uniqExactIf(actor_id, status = 'Available')
+  extra: {}
+  metric_name: Available
+  metric_type: null
+  verbose_name: Available
+  warning_text: null
+- currency: null
+  d3format: null
+  description: null
+  expression: uniqExactIf(actor_id, status = 'Partially Attempted')
+  extra: {}
+  metric_name: Partially Attempted
+  metric_type: null
+  verbose_name: Partially Attempted
+  warning_text: null
+- currency: null
+  d3format: null
+  description: null
+  expression: uniqExactIf(actor_id, status = 'Not Demonstrated')
+  extra: {}
+  metric_name: Not Demonstrated
+  metric_type: null
+  verbose_name: Not Demonstrated
+  warning_text: null
+- currency: null
+  d3format: null
+  description: null
+  expression: uniqExactIf(actor_id, status = 'Demonstrated')
+  extra: {}
+  metric_name: Demonstrated
+  metric_type: null
+  verbose_name: Demonstrated
+  warning_text: null
+- currency: null
+  d3format: null
+  description: Sorts statuses by effort
+  expression: max(status_rank)
+  extra: {}
+  metric_name: status_order
+  metric_type: null
+  verbose_name: Status Order
+  warning_text: null
+- currency: null
+  d3format: null
+  description: null
   expression: COUNT(DISTINCT actor_id)
   extra: {}
   metric_name: learners
@@ -272,7 +367,7 @@ metrics:
 - currency: null
   d3format: null
   description: null
-  expression: uniqExactIf((actor_id, tag_id), mastered_at is not null)
+  expression: uniqExactIf((actor_id, tag_id, course_key), mastered_at is not null)
   extra: {}
   metric_name: competencies_mastered
   metric_type: null

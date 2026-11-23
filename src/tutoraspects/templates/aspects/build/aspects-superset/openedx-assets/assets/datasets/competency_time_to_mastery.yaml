@@ -159,19 +159,6 @@ columns:
   python_date_format: null
   type: Nullable(Int64)
   verbose_name: Time to Mastery (seconds)
-- advanced_data_type: null
-  column_name: time_to_mastery_bucket
-  datetime_format: null
-  description: null
-  expression: ''
-  extra: *id001
-  filterable: true
-  groupby: true
-  is_active: true
-  is_dttm: false
-  python_date_format: null
-  type: String
-  verbose_name: Time to Mastery Bucket
 currency_code_column: null
 database_uuid: 21174b6c-4d40-4958-8161-d6c3cf5e77b6
 default_endpoint: null
