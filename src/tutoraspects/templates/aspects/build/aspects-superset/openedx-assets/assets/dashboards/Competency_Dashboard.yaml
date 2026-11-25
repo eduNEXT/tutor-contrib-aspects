@@ -25,6 +25,9 @@ metadata:
     - 9009
     - 9010
     - 9011
+    - 9012
+    - 9013
+    - 9014
     scope:
       excluded: []
       rootPath:
@@ -48,6 +51,9 @@ metadata:
     - 9009
     - 9010
     - 9011
+    - 9012
+    - 9013
+    - 9014
     controlValues:
       defaultToFirstItem: false
       enableEmptyFilter: false
@@ -85,6 +91,9 @@ metadata:
     - 9009
     - 9010
     - 9011
+    - 9012
+    - 9013
+    - 9014
     controlValues:
       defaultToFirstItem: false
       enableEmptyFilter: false
@@ -122,6 +131,9 @@ metadata:
     - 9009
     - 9010
     - 9011
+    - 9012
+    - 9013
+    - 9014
     controlValues:
       defaultToFirstItem: false
       enableEmptyFilter: false
@@ -159,6 +171,9 @@ metadata:
     - 9009
     - 9010
     - 9011
+    - 9012
+    - 9013
+    - 9014
     controlValues:
       defaultToFirstItem: false
       enableEmptyFilter: false
@@ -858,18 +873,15 @@ position:
     - TABS-competency-main
     - TAB-competency-learner
     type: HEADER
-  MARKDOWN-competency-engagement:
+  CHART-competency-engagement:
     children: []
-    id: MARKDOWN-competency-engagement
+    id: CHART-competency-engagement
     meta:
-      code: '#### 3.2 · Assessment Engagement
-
-
-        If an assessment assesses multiple competencies, this table shows one row per competency.
-
-
-        **&lt;missing data #4&gt;** Needs the assessment to competency link and each criterion''s mastery rule (criterion sinks).'
-      height: 40
+      chartId: 9013
+      height: 70
+      sliceName: Assessment Engagement
+      sliceNameOverride: 3.2 · Assessment Engagement
+      uuid: f07a2477-6f31-4759-8891-4c68406e68b8
       width: 12
     parents:
     - ROOT_ID
@@ -877,19 +889,16 @@ position:
     - TABS-competency-main
     - TAB-competency-learner
     - ROW-competency-s3_2
-    type: MARKDOWN
-  MARKDOWN-competency-grade_distribution:
+    type: CHART
+  CHART-competency-grade_distribution:
     children: []
-    id: MARKDOWN-competency-grade_distribution
+    id: CHART-competency-grade_distribution
     meta:
-      code: '#### 3.1 · Assessment Grade Distribution
-
-
-        If a learner attempted an assessment multiple times, this distribution plots their best grade.
-
-
-        **&lt;missing data #3&gt;** Needs which assessments are aligned to each competency (criterion sinks).'
-      height: 40
+      chartId: 9012
+      height: 60
+      sliceName: Assessment Grade Distribution
+      sliceNameOverride: 3.1 · Assessment Grade Distribution
+      uuid: 961bc3ca-a46c-4189-bbd0-a76cbc0a8718
       width: 12
     parents:
     - ROOT_ID
@@ -897,19 +906,16 @@ position:
     - TABS-competency-main
     - TAB-competency-learner
     - ROW-competency-s3_1
-    type: MARKDOWN
-  MARKDOWN-competency-gradebook:
+    type: CHART
+  CHART-competency-gradebook:
     children: []
-    id: MARKDOWN-competency-gradebook
+    id: CHART-competency-gradebook
     meta:
-      code: '#### 4.2 · Competency Assessment Gradebook
-
-
-        Best attempt score for each competency-aligned assessment. Available when the dashboard is filtered to a single course, pathway or competency.
-
-
-        **&lt;missing data #5&gt;** Needs the assessment to competency link, each criterion''s mastery rule and the learner''s per-assessment status (criterion sinks).'
-      height: 40
+      chartId: 9014
+      height: 80
+      sliceName: Competency Assessment Gradebook
+      sliceNameOverride: 4.2 · Competency Assessment Gradebook
+      uuid: 75ce0e6d-be1a-4ab0-b443-669bdcbf980b
       width: 12
     parents:
     - ROOT_ID
@@ -917,10 +923,10 @@ position:
     - TABS-competency-main
     - TAB-competency-learner
     - ROW-competency-s4_2
-    type: MARKDOWN
+    type: CHART
   ROW-competency-s3_1:
     children:
-    - MARKDOWN-competency-grade_distribution
+    - CHART-competency-grade_distribution
     id: ROW-competency-s3_1
     meta:
       background: BACKGROUND_TRANSPARENT
@@ -932,7 +938,7 @@ position:
     type: ROW
   ROW-competency-s3_2:
     children:
-    - MARKDOWN-competency-engagement
+    - CHART-competency-engagement
     id: ROW-competency-s3_2
     meta:
       background: BACKGROUND_TRANSPARENT
@@ -956,7 +962,7 @@ position:
     type: ROW
   ROW-competency-s4_2:
     children:
-    - MARKDOWN-competency-gradebook
+    - CHART-competency-gradebook
     id: ROW-competency-s4_2
     meta:
       background: BACKGROUND_TRANSPARENT

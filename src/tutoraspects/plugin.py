@@ -56,6 +56,8 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
                 "pathway_enrollment",
                 "student_competency_status",
                 "student_competency_course_status",
+                "competency_criterion",
+                "student_competency_criterion_status",
             ],
         ),
         (

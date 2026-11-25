@@ -1,0 +1,52 @@
+_file_name: Assessment_Engagement_f07a24.yaml
+cache_timeout: null
+certification_details: null
+certified_by: null
+dataset_uuid: 8346d89e-1bf5-4d02-92cb-7ff89a80d296
+description: |-
+  If an assessment assesses multiple competencies, this table shows one row per competency.
+
+  **How it is computed**
+
+  - Mastery Rule is the criterion's current effective rule (its own override, else its rule profile's).
+  - Attempted: enrolled learners that core judged on the criterion, or that have a grade on the assessment. Not Attempted: the other enrolled learners.
+  - Avg. Best Attempt Grade averages the attempted learners' best grades, and is red when the average is below the rule.
+
+  **Limitations**
+
+  - The Type column (quiz, exam, ...) is `<missing data>`: the subsection's assignment type is not in Aspects' course blocks.
+  - No links on Course or Mastery Rule: clicking a value cross-filters, as elsewhere in Aspects.
+params:
+  adhoc_filters: []
+  allow_rearrange_columns: true
+  allow_render_html: true
+  annotation_layers: []
+  color_scheme: aspects_default
+  extra_form_data: {}
+  groupby:
+  - assessment
+  - course_name
+  - competency
+  - rule_label
+  include_search: true
+  metrics:
+  - learners_attempted
+  - learners_not_attempted
+  - avg_best_grade
+  order_by_cols: []
+  order_desc: true
+  page_length: 10
+  query_mode: aggregate
+  row_limit: 10000
+  server_pagination: false
+  show_cell_bars: true
+  table_timestamp_format: smart_date
+  timeseries_limit_metric: learners_attempted
+  viz_type: table
+query_context: null
+slice_name: Assessment Engagement
+tags:
+- original
+uuid: f07a2477-6f31-4759-8891-4c68406e68b8
+version: 1.0.0
+viz_type: table

@@ -290,8 +290,24 @@ columns:
 - advanced_data_type: null
   column_name: assessment_snapshot
   datetime_format: null
-  description: Placeholder until the per-assessment status sink exists (open task 2)
-  expression: '''&lt;missing data #2&gt;'''
+  description: The competency's assessments in the row's course, one square each (green met, red below rule, grey not attempted), and how many were met
+  expression: |-
+    if(
+        assessments_total = 0,
+        '',
+        concat(
+            repeat('<span style="color:#3FA36F">&#9632;</span>', assessments_met),
+            repeat('<span style="color:#741420">&#9632;</span>', assessments_below),
+            repeat(
+                '<span style="color:#CBD5E1">&#9632;</span>',
+                greatest(assessments_total - assessments_met - assessments_below, 0)
+            ),
+            ' ',
+            toString(assessments_met),
+            ' of ',
+            toString(assessments_total)
+        )
+    )
   extra: {}
   filterable: false
   groupby: true
@@ -300,6 +316,45 @@ columns:
   python_date_format: null
   type: String
   verbose_name: Assessment Snapshot
+- advanced_data_type: null
+  column_name: assessments_total
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: UInt64
+  verbose_name: Assessments
+- advanced_data_type: null
+  column_name: assessments_met
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: UInt64
+  verbose_name: Assessments Met
+- advanced_data_type: null
+  column_name: assessments_below
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: UInt64
+  verbose_name: Assessments Below Rule
 currency_code_column: null
 database_uuid: 21174b6c-4d40-4958-8161-d6c3cf5e77b6
 default_endpoint: null

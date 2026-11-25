@@ -1,0 +1,51 @@
+_file_name: Assessment_Grade_Distribution_961bc3.yaml
+cache_timeout: null
+certification_details: null
+certified_by: null
+dataset_uuid: 8346d89e-1bf5-4d02-92cb-7ff89a80d296
+description: |-
+  If a learner attempted an assessment multiple times, this distribution plots their best grade.
+
+  **How it is computed**
+
+  - Assessments are the subsections with a competency criterion. Each learner x assessment counts once, even when the assessment assesses several competencies.
+  - The grade is the subsection grade from the LMS's xAPI subsection grade statements: weighted earned over weighted possible, across all of the subsection's problems.
+  - Buckets are 10 points wide: 70 means 70% to 79.9%, 100 means a perfect score.
+  - The mockup's "Assessment: All" dropdown is not in the chart. Use the dashboard filters instead.
+params:
+  adhoc_filters:
+  - clause: WHERE
+    comparator: null
+    expressionType: SIMPLE
+    operator: IS NOT NULL
+    subject: best_grade_bucket
+  annotation_layers: []
+  color_scheme: aspects_default
+  extra_form_data: {}
+  groupby: []
+  metrics:
+  - assessment_learners
+  orientation: vertical
+  rich_tooltip: true
+  row_limit: 10000
+  show_legend: false
+  truncateXAxis: false
+  truncateYAxis: false
+  viz_type: echarts_timeseries_bar
+  xAxisForceCategorical: true
+  xAxisLabelRotation: 0
+  x_axis: best_grade_bucket
+  x_axis_sort_asc: true
+  x_axis_title: Best attempt grade (%)
+  x_axis_title_margin: 30
+  y_axis_format: SMART_NUMBER
+  y_axis_title: Learners
+  y_axis_title_margin: 40
+  y_axis_title_position: Left
+query_context: null
+slice_name: Assessment Grade Distribution
+tags:
+- original
+uuid: 961bc3ca-a46c-4189-bbd0-a76cbc0a8718
+version: 1.0.0
+viz_type: echarts_timeseries_bar

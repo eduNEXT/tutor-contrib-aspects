@@ -8,7 +8,7 @@ description: |-
 
   **Limitations**
 
-  - Assessment Snapshot: `<missing data #2>`. Needs the per-assessment status of each learner, which no sink sends yet.
+  - Assessment Snapshot: one square per assessment of the competency in the row's course, from core's per-assessment status: green met, red below rule, grey not attempted. "1 of 2" counts met assessments. Whether 1 of 2 already demonstrates the competency depends on the criteria tree (AND/OR), so the Status can be Demonstrated with assessments left.
   - Status, First Attempt and Mastery Date are per course: a learner appears once for each course that assesses the competency.
   - The Status dropdown and the search box from the mockup are replaced by the dashboard's Status filter and the table search.
 params:

@@ -1,0 +1,253 @@
+_file_name: competency_gradebook.yaml
+always_filter_main_dttm: false
+cache_timeout: null
+catalog: null
+columns:
+- advanced_data_type: null
+  column_name: org
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Organization
+- advanced_data_type: null
+  column_name: course_key
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Course Key
+- advanced_data_type: null
+  column_name: course_name
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Course Name
+- advanced_data_type: null
+  column_name: competency
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Competency
+- advanced_data_type: null
+  column_name: status
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Competency Status
+- advanced_data_type: null
+  column_name: name
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Learner
+- advanced_data_type: null
+  column_name: username
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Username
+- advanced_data_type: null
+  column_name: email
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Email
+- advanced_data_type: null
+  column_name: actor_id
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Actor ID
+- advanced_data_type: null
+  column_name: gradebook_column
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Assessment · Competency (Rule)
+- advanced_data_type: null
+  column_name: criterion_status
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Assessment Status
+- advanced_data_type: null
+  column_name: best_grade
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: Nullable(Float64)
+  verbose_name: Best Attempt Grade
+- advanced_data_type: null
+  column_name: rule_value
+  datetime_format: null
+  description: null
+  expression: ''
+  extra: {}
+  filterable: true
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: Nullable(Float64)
+  verbose_name: Mastery Rule Threshold
+currency_code_column: null
+database_uuid: 21174b6c-4d40-4958-8161-d6c3cf5e77b6
+default_endpoint: null
+description: 'competency_assessment_grades for the gradebook, only when exactly one course or one competency is selected'
+extra: {}
+fetch_values_predicate: null
+filter_select_enabled: true
+folders: null
+main_dttm_col: null
+metrics:
+- currency: null
+  d3format: '.0%'
+  description: null
+  expression: 'max(best_grade)'
+  extra: {}
+  metric_name: best
+  metric_type: null
+  verbose_name: Best
+  warning_text: null
+- currency: null
+  d3format: '+.0%'
+  description: 'Best grade minus the mastery rule threshold: green when the best grade meets the rule'
+  expression: 'round(max(best_grade) - max(rule_value), 6)'
+  extra: {}
+  metric_name: vs_rule
+  metric_type: null
+  verbose_name: vs Rule
+  warning_text: null
+normalize_columns: true
+offset: 0
+params: null
+schema: '{{ DBT_PROFILE_TARGET_DATABASE }}'
+sql: |
+  {% raw -%}
+  {%- set orgs = filter_values('org') -%}
+  {%- set courses = filter_values('course_name') -%}
+  {%- set competencies = filter_values('competency') -%}
+  {%- set statuses = filter_values('status') -%}
+  {%- if courses | length == 1 or competencies | length == 1 %}
+  {%- endraw %}
+  select
+      org,
+      course_key,
+      course_name,
+      competency,
+      status,
+      name,
+      username,
+      email,
+      actor_id,
+      gradebook_column,
+      criterion_status,
+      best_grade,
+      rule_value
+  from (
+    {% filter indent(width=4) %}{% include 'openedx-assets/queries/competency_assessment_grades.sql' %}{% endfilter %}
+  )
+  {% raw -%}
+  {%- else %}
+  select
+      {% if orgs %}arrayJoin(array{{ orgs | where_in }}){% else %}''{% endif %} as org,
+      '' as course_key,
+      {% if courses %}arrayJoin(array{{ courses | where_in }}){% else %}''{% endif %} as course_name,
+      {% if competencies %}arrayJoin(array{{ competencies | where_in }}){% else %}''{% endif %} as competency,
+      {% if statuses %}arrayJoin(array{{ statuses | where_in }}){% else %}''{% endif %} as status,
+      'Select one course or one competency to see the gradebook' as name,
+      '' as username,
+      '' as email,
+      '' as actor_id,
+      '' as gradebook_column,
+      '' as criterion_status,
+      cast(null, 'Nullable(Float64)') as best_grade,
+      cast(null, 'Nullable(Float64)') as rule_value
+  {%- endif %}
+  {%- endraw %}
+table_name: competency_gradebook
+template_params: {}
+uuid: 9532cfbe-f98e-4211-a567-87cc73d27945
+version: 1.0.0
