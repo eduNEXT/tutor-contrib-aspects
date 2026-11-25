@@ -95,15 +95,18 @@ with
             )
     ),
     learner_competency_courses as (
+        -- Enrollments come from the event sink, not from xAPI: a learner who
+        -- enrolled before xAPI collection started has no registered event.
         select
             enrollment.org as org,
             cc.course_key as course_key,
             enrollment.actor_id as actor_id,
             cc.tag_id as tag_id
-        from {{ DBT_PROFILE_TARGET_DATABASE }}.dim_most_recent_enrollment as enrollment
-        inner join
-            competency_courses as cc on cc.course_key = enrollment.course_key::String
-        where enrollment.enrollment_status = 'registered'
+        from
+            {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_most_recent_course_enrollment
+            as enrollment
+        inner join competency_courses as cc on cc.course_key = enrollment.course_key
+        where enrollment.is_active
     ),
     statuses as (
         -- Latest status per learner x competency. created is the first status.
@@ -119,15 +122,57 @@ with
         from
             {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_learner_most_recent_competency_course_status final
     ),
-    learner_competencies as (
+    live_criteria as (
+        select id as criterion_id, tag_id, course_key
+        from
+            {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_most_recent_competency_criteria final
+        where archived = 0
+    ),
+    criteria_counts as (
+        -- How many live criteria (assessments) each competency has in each course.
+        select tag_id, course_key, count() as assessments_total
+        from live_criteria
+        group by tag_id, course_key
+    ),
+    learner_criteria as (
+        -- Per learner, competency and course: criteria core judged met and not met.
+        select
+            s.actor_id as actor_id,
+            c.tag_id as tag_id,
+            c.course_key as course_key,
+            countIf(s.status_id = 30) as assessments_met,
+            countIf(s.status_id = 10) as assessments_below
+        from
+            {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_learner_most_recent_criterion_status as s final
+        inner join live_criteria as c on c.criterion_id = s.criterion_id
+        group by s.actor_id, c.tag_id, c.course_key
+    ),
+    learner_course_competencies as (
+        -- Enrolled courses, plus any course where the learner has a course-level
+        -- status, so a status still shows if the enrollment is missing or inactive.
         select org, course_key, actor_id, tag_id
         from learner_competency_courses
+        union distinct
+        select
+            coalesce(
+                get_org_from_course_url(course_key),
+                get_org_from_ccx_course_url(course_key),
+                ''
+            ) as org,
+            course_key,
+            actor_id,
+            tag_id
+        from course_statuses
+    ),
+    learner_competencies as (
+        select org, course_key, actor_id, tag_id
+        from learner_course_competencies
         union distinct
         select '' as org, '' as course_key, actor_id, tag_id
         from statuses
         where
             (actor_id, tag_id)
-            not in (select actor_id, tag_id from learner_competency_courses)
+            not in (select actor_id, tag_id from learner_course_competencies)
     ),
     first_activity as (
         -- First xAPI event, per course, on content tagged with the competency:
@@ -231,6 +276,12 @@ select
         least(fa.first_activity_at, first_status_at)
     ) as first_attempt_at,
     dateDiff('second', first_attempt_at, mastered_at) as time_to_mastery_seconds,
+    -- Assessment Snapshot: the competency's assessments in this course, and how
+    -- many of them core judged met or below rule for the learner. Rows without a
+    -- course have no assessments.
+    cc.assessments_total as assessments_total,
+    lc.assessments_met as assessments_met,
+    lc.assessments_below as assessments_below,
     users.name as name,
     users.username as username,
     users.email as email
@@ -241,6 +292,13 @@ left join
     on fa.actor_id = lr.actor_id
     and fa.tag_id = lr.tag_id
     and fa.course_key = lr.course_key
+left join
+    criteria_counts as cc on cc.tag_id = lr.tag_id and cc.course_key = lr.course_key
+left join
+    learner_criteria as lc
+    on lc.actor_id = lr.actor_id
+    and lc.tag_id = lr.tag_id
+    and lc.course_key = lr.course_key
 left join
     {{ ASPECTS_EVENT_SINK_DATABASE }}.dim_course_names as names
     on names.course_key = lr.course_key
