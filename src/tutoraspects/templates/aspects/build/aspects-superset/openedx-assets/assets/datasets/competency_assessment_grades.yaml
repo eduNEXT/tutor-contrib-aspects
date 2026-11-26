@@ -327,6 +327,42 @@ main_dttm_col: null
 metrics:
 - currency: null
   d3format: null
+  description: 'Attempted learners; the bar is their share of the enrolled learners. HTML, so the table must render HTML'
+  expression: |-
+    concat(
+        '<span style="display:none">',
+        leftPad(toString(uniqExactIf(actor_id, attempted)), 8, '0'),
+        '</span><div style="margin:0;padding:1px 8px;line-height:18px;border-radius:3px;color:#1C2430;background:linear-gradient(to right, #DCE8F5 ',
+        toString(round(100 * uniqExactIf(actor_id, attempted) / greatest(uniqExact(actor_id), 1), 1)),
+        '%, transparent 0)">',
+        toString(uniqExactIf(actor_id, attempted)),
+        '</div>'
+    )
+  extra: {}
+  metric_name: attempted_bar
+  metric_type: null
+  verbose_name: N Learners Attempted
+  warning_text: null
+- currency: null
+  d3format: null
+  description: 'Enrolled learners not attempted; the bar is their share of the enrolled learners. HTML, so the table must render HTML'
+  expression: |-
+    concat(
+        '<span style="display:none">',
+        leftPad(toString(uniqExactIf(actor_id, not attempted)), 8, '0'),
+        '</span><div style="margin:0;padding:1px 8px;line-height:18px;border-radius:3px;color:#5B6676;background:linear-gradient(to right, #ECEEF1 ',
+        toString(round(100 * uniqExactIf(actor_id, not attempted) / greatest(uniqExact(actor_id), 1), 1)),
+        '%, transparent 0)">',
+        toString(uniqExactIf(actor_id, not attempted)),
+        '</div>'
+    )
+  extra: {}
+  metric_name: not_attempted_bar
+  metric_type: null
+  verbose_name: N Learners Not Attempted
+  warning_text: null
+- currency: null
+  d3format: null
   description: 'Learner x assessment pairs with a grade; an assessment for several competencies counts once'
   expression: 'uniqExactIf((actor_id, object_id), has_grade)'
   extra: {}
@@ -354,19 +390,25 @@ metrics:
   warning_text: null
 - currency: null
   d3format: null
-  description: 'Average of the learners'' best grades, red when below the mastery rule. HTML, so the table must render HTML'
+  description: 'Average of the learners'' best grades. The fill is the average, the dark tick is the rule; below the rule the fill is red, the text bold and followed by "· below rule". HTML, so the table must render HTML'
   expression: |-
     if(
         countIf(has_grade) = 0,
-        '—',
+        '<span style="display:none">-1</span><span style="color:#8A94A3">—</span>',
         concat(
-            '<span style="display:inline-block;min-width:3.5em;padding:1px 6px;border-radius:3px;background:',
-            if(avgIf(best_grade, has_grade) >= max(rule_value), '#E3F1E9', '#F8E1E4'),
-            '">',
-            toString(round(avgIf(best_grade, has_grade) * 100)),
-            '%',
-            if(avgIf(best_grade, has_grade) >= max(rule_value), '', ' · below rule'),
-            '</span>'
+            '<span style="display:none">',
+            leftPad(toString(round(avgIf(best_grade, has_grade) * 1000)), 6, '0'),
+            '</span><div style="margin:0;padding:1px 8px;line-height:18px;border-radius:3px;',
+            if(avgIf(best_grade, has_grade) >= max(rule_value), 'color:#1E5E3A;', 'color:#8A1C2B;font-weight:700;'),
+            'background:linear-gradient(to right, transparent calc(', toString(max(rule_value) * 100),
+            '% - 2px), #1C2430 calc(', toString(max(rule_value) * 100), '% - 2px), #1C2430 ',
+            toString(max(rule_value) * 100), '%, transparent ', toString(max(rule_value) * 100), '%), ',
+            'linear-gradient(to right, ',
+            if(avgIf(best_grade, has_grade) >= max(rule_value), '#D7EEDF', '#F6D9DD'), ' ',
+            toString(round(avgIf(best_grade, has_grade) * 100, 1)), '%, transparent 0)">',
+            toString(round(avgIf(best_grade, has_grade) * 100)), '%',
+          if(avgIf(best_grade, has_grade) >= max(rule_value), '', ' · below rule'),
+          '</div>'
         )
     )
   extra: {}

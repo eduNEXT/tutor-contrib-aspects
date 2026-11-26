@@ -4,6 +4,45 @@ cache_timeout: null
 catalog: null
 columns:
 - advanced_data_type: null
+  column_name: Learner
+  datetime_format: null
+  description: 'The learner''s name, or username when the profile has no name. HTML-escaped: the pivot renders HTML. Named so the pivot''s header reads Learner'
+  expression: ''
+  extra: {}
+  filterable: false
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Learner
+- advanced_data_type: null
+  column_name: Assessment
+  datetime_format: null
+  description: 'The assessment (subsection) name, HTML-escaped'
+  expression: ''
+  extra: {}
+  filterable: false
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Assessment
+- advanced_data_type: null
+  column_name: Criterion
+  datetime_format: null
+  description: 'Column header: the competency as a chip and the mastery rule under it. HTML'
+  expression: ''
+  extra: {}
+  filterable: false
+  groupby: true
+  is_active: true
+  is_dttm: false
+  python_date_format: null
+  type: String
+  verbose_name: Criterion
+- advanced_data_type: null
   column_name: org
   datetime_format: null
   description: null
@@ -183,6 +222,26 @@ folders: null
 main_dttm_col: null
 metrics:
 - currency: null
+  d3format: null
+  description: 'Best grade and core''s judgement of it: Met, Below rule, Not judged (a grade but no status), or No score. HTML, so the pivot must render HTML'
+  expression: |-
+    multiIf(
+        any(criterion_status) = 'Notice',
+        '',
+        any(criterion_status) = 'Met',
+        concat('<div style="text-align:left"><span style="display:inline-block;padding:2px 8px;border-radius:3px;white-space:nowrap;background:#E3F1E9;border-left:3px solid #2E7D4F;color:#1E5E3A">', if(isNull(max(best_grade)), '', concat('<b style="color:#1C2430">', toString(round(max(best_grade) * 100)), '%</b>&nbsp;&nbsp;')), '<b>&#10003; Met</b></span></div>'),
+        any(criterion_status) = 'Below rule',
+        concat('<div style="text-align:left"><span style="display:inline-block;padding:2px 8px;border-radius:3px;white-space:nowrap;background:#F8E1E4;border-left:3px solid #B42335;color:#8A1C2B">', if(isNull(max(best_grade)), '', concat('<b style="color:#1C2430">', toString(round(max(best_grade) * 100)), '%</b>&nbsp;&nbsp;')), '<b>&#10005; Below rule</b></span></div>'),
+        isNull(max(best_grade)),
+        concat('<div style="text-align:left"><span style="display:inline-block;padding:2px 8px;border-radius:3px;white-space:nowrap;background:#EEF0F2;border:1px solid #D5DAE1;color:#5B6676">', 'No score</span></div>'),
+        concat('<div style="text-align:left"><span style="display:inline-block;padding:2px 8px;border-radius:3px;white-space:nowrap;background:#EEF0F2;border:1px solid #D5DAE1;color:#5B6676">', if(isNull(max(best_grade)), '', concat('<b style="color:#1C2430">', toString(round(max(best_grade) * 100)), '%</b>&nbsp;&nbsp;')), 'Not judged</span></div>')
+    )
+  extra: {}
+  metric_name: grade_cell
+  metric_type: null
+  verbose_name: Best attempt
+  warning_text: null
+- currency: null
   d3format: '.0%'
   description: null
   expression: 'max(best_grade)'
@@ -225,7 +284,20 @@ sql: |
       gradebook_column,
       criterion_status,
       best_grade,
-      rule_value
+      rule_value,
+      concat(
+          '<span style="font-weight:400">',
+          encodeXMLComponent(if(empty(ifNull(name, '')), username, name)),
+          '</span>'
+      ) as Learner,
+      encodeXMLComponent(assessment) as Assessment,
+      concat(
+          '<span style="display:inline-block;padding:0 7px;line-height:18px;border:1px solid #CBD2DB;border-radius:4px;background:#F3F5F8;font-weight:400;white-space:nowrap">',
+          encodeXMLComponent(competency),
+          '</span><br><span style="display:inline-block;margin-top:4px;color:#1F6FA8;text-decoration:underline;font-weight:400;white-space:nowrap">Rule: ',
+          rule_label,
+          '</span>'
+      ) as Criterion
   from (
     {% filter indent(width=4) %}{% include 'openedx-assets/queries/competency_assessment_grades.sql' %}{% endfilter %}
   )
@@ -242,9 +314,15 @@ sql: |
       '' as email,
       '' as actor_id,
       '' as gradebook_column,
-      '' as criterion_status,
+      'Notice' as criterion_status,
       cast(null, 'Nullable(Float64)') as best_grade,
-      cast(null, 'Nullable(Float64)') as rule_value
+      cast(null, 'Nullable(Float64)') as rule_value,
+      concat(
+          '<span style="color:#1F6FA8;font-weight:700">&#9432;</span> ',
+          '<span style="font-weight:400">Select one course or one competency in the dashboard filters to see the gradebook.</span>'
+      ) as Learner,
+      '' as Assessment,
+      '' as Criterion
   {%- endif %}
   {%- endraw %}
 table_name: competency_gradebook

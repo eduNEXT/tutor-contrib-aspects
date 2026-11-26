@@ -10,7 +10,8 @@ description: |-
 
   - Mastery Rule is the criterion's current effective rule (its own override, else its rule profile's).
   - Attempted: enrolled learners that core judged on the criterion, or that have a grade on the assessment. Not Attempted: the other enrolled learners.
-  - Avg. Best Attempt Grade averages the attempted learners' best grades, and is red when the average is below the rule.
+  - The bars behind the learner counts are each count's share of the enrolled learners.
+  - Avg. Best Attempt Grade averages the attempted learners' best grades. The fill is the average and the dark tick is the rule: below the rule the fill turns red, the number bold, and "· below rule" follows it.
 
   **Limitations**
 
@@ -28,18 +29,18 @@ params:
   - course_name
   - competency
   - rule_label
-  include_search: true
+  include_search: false
   metrics:
-  - learners_attempted
-  - learners_not_attempted
+  - attempted_bar
+  - not_attempted_bar
   - avg_best_grade
   order_by_cols: []
   order_desc: true
-  page_length: 10
+  page_length: 0
   query_mode: aggregate
   row_limit: 10000
   server_pagination: false
-  show_cell_bars: true
+  show_cell_bars: false
   table_timestamp_format: smart_date
   timeseries_limit_metric: learners_attempted
   viz_type: table

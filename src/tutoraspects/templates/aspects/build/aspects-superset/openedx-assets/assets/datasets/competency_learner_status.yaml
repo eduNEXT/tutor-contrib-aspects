@@ -266,18 +266,18 @@ columns:
 - advanced_data_type: null
   column_name: status_display
   datetime_format: null
-  description: Status with its colour, as HTML for tables
+  description: Status followed by its colour, as HTML for tables. The name comes first so a cross-filter on this column starts with it
   expression: |-
     concat(
-        '<span style="color: ',
+        status,
+        ' <span style="color: ',
         multiIf(
             status = 'Demonstrated', '#3FA36F',
             status = 'Not Demonstrated', '#741420',
             status = 'Partially Attempted', '#0A67A3',
             '#CBD5E1'
         ),
-        '">&#9632;</span> ',
-        status
+        '">&#9632;</span>'
     )
   extra: {}
   filterable: false

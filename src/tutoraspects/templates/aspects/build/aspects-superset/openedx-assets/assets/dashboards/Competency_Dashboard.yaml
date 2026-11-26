@@ -3,7 +3,62 @@ _roles:
 - '{{ SUPERSET_ROLES_MAPPING.instructor }}'
 certification_details: null
 certified_by: null
-css: ''
+css: |-
+  /* 4.2 Competency Assessment Gradebook (pivot table). Found by the colour
+     (#1F6FA8) of its rule links, or of the info mark in its "select a filter"
+     message: the chart's id on the page differs between installs. */
+  table.pvtTable:has(span[style*="#1F6FA8"]) th,
+  table.pvtTable:has(span[style*="#1F6FA8"]) td {
+    border-color: #E6E9EE;
+    vertical-align: middle;
+  }
+  /* The pivot's metric level ("Metric / Best attempt"): collapsed, not removed,
+     because the corner cell spans the header rows. */
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead tr:first-child th:is(.pvtAxisLabel, .pvtColLabel) {
+    font-size: 0;
+    line-height: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+  }
+  /* Column attribute names ("Assessment", "Criterion"): shrink their column away. */
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead tr:not(:last-child) th.pvtAxisLabel,
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead th.pvtTotalLabel {
+    font-size: 0;
+    padding: 0;
+  }
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead tr:last-child th.pvtAxisLabel {
+    vertical-align: bottom;
+    font-size: 13px;
+  }
+  /* Sort arrows next to the rule links. Clicking a header still sorts. */
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead span[role="columnheader"] svg {
+    display: none;
+  }
+  /* Assessment names: the header's top level, with a divider between assessments. */
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead tr:nth-child(2) th.pvtColLabel {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 8px 6px;
+    border-left: 2px solid #CBD2DB;
+  }
+  table.pvtTable:has(span[style*="#1F6FA8"]) thead tr:nth-child(3) th.pvtColLabel {
+    padding: 4px 8px 8px;
+    vertical-align: top;
+    border-bottom: 2px solid #CBD2DB;
+  }
+  /* Body: no vertical lines, a quiet row hover, learner names centred on their chips. */
+  table.pvtTable:has(span[style*="#1F6FA8"]) tbody td,
+  table.pvtTable:has(span[style*="#1F6FA8"]) tbody th {
+    border-left-color: transparent;
+    border-right-color: transparent;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  table.pvtTable:has(span[style*="#1F6FA8"]) tbody tr:hover td,
+  table.pvtTable:has(span[style*="#1F6FA8"]) tbody tr:hover th {
+    background: #F5F7FA;
+  }
 dashboard_title: Competency Dashboard
 description: null
 metadata:

@@ -8,39 +8,34 @@ description: |-
 
   **How it is computed**
 
-  - One column per assessment x competency, labelled with the criterion's mastery rule. Best is the learner's best subsection grade; vs Rule is Best minus the rule threshold, green when it meets the rule and red when it doesn't.
-  - An empty cell means no score: the learner has no grade on the assessment.
+  - One column per assessment, split by the competencies it assesses, each with the criterion's mastery rule.
+  - The score is the learner's best subsection grade, from the xAPI subsection grade statements.
+  - Met / Below rule is openedx-core's judgement (the criterion status sink). Core judged the grade the learner had at grading time and only raises a status, so a later lower grade keeps Met.
+  - Not judged: the learner has a grade but core has no status, e.g. a grade from before the criterion existed. No score: no grade and no status.
 
   **Limitations**
 
-  - The mockup's "✓ Met / ✗ Below rule" labels can't render in a pivot table; vs Rule and its colour stand in for them. They compare the best grade with the rule, while core's status (Met / Below rule in Assessment Engagement and the Assessment Snapshot) judged the grade the learner had at grading time. The two agree unless a grade was lowered after core judged it, or a status was set by hand.
+  - Learners are rows by name: two learners with the same name share a row.
   - Pathway selection is not available yet.
 params:
   adhoc_filters: []
-  aggregateFunction: Sum
+  aggregateFunction: List Unique Values
+  allow_render_html: true
   annotation_layers: []
   colOrder: key_a_to_z
   colSubTotals: false
   colTotals: false
-  combineMetric: true
-  conditional_formatting:
-  - colorScheme: '#ACE1C4'
-    column: vs_rule
-    operator: "\u2265"
-    targetValue: 0
-  - colorScheme: '#EFA1AA'
-    column: vs_rule
-    operator: <
-    targetValue: 0
+  combineMetric: false
+  conditional_formatting: []
   date_format: smart_date
   extra_form_data: {}
   groupbyColumns:
-  - gradebook_column
+  - Assessment
+  - Criterion
   groupbyRows:
-  - name
+  - Learner
   metrics:
-  - best
-  - vs_rule
+  - grade_cell
   metricsLayout: COLUMNS
   order_desc: true
   rowOrder: key_a_to_z
@@ -49,7 +44,7 @@ params:
   row_limit: 10000
   temporal_columns_lookup: {}
   transposePivot: false
-  valueFormat: .0%
+  valueFormat: SMART_NUMBER
   viz_type: pivot_table_v2
 query_context: null
 slice_name: Competency Assessment Gradebook
