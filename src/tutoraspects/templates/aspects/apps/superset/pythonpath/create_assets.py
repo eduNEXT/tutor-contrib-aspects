@@ -144,6 +144,11 @@ def write_asset_to_file(
             for chart in asset.get("position").values():
                 if isinstance(chart, dict) and chart.get('type') == '':
                     chart["type"] = 'CHART'
+        # If PII is disabled, remove the tabs specified in config. Each import
+        # reads the asset from the image and replaces the dashboard, so turning
+        # PII back on brings the tabs back.
+        if not {{ ASPECTS_ENABLE_PII }} and {{ ASPECTS_PII_DASHBOARD_TABS }}:
+            remove_dashboard_tabs(asset.get("position"), {{ ASPECTS_PII_DASHBOARD_TABS }})
 
 
     if folder in ["charts", "dashboards", "datasets"]:
@@ -187,6 +192,26 @@ def write_asset_to_file(
         yaml.dump(asset, file)
 
     db.session.commit()
+
+
+def remove_dashboard_tabs(position, tab_ids):
+    """
+    Remove tabs from a dashboard's position, with every component inside them.
+
+    Superset lists all of a component's ancestors in its parents, so the
+    components inside a tab are the ones that list the tab there.
+    """
+    for tab_id in tab_ids:
+        for key in [
+            key
+            for key, node in position.items()
+            if isinstance(node, dict) and tab_id in node.get("parents", [])
+        ]:
+            del position[key]
+        position.pop(tab_id, None)
+        for node in position.values():
+            if isinstance(node, dict) and tab_id in node.get("children", []):
+                node["children"].remove(tab_id)
 
 
 def generate_translated_asset(

@@ -80,6 +80,15 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
                 "a0e65b39-e03f-5b8c-af91-c08f3c456f96",  # Mastery Progress Overview
             ],
         ),
+        # If PII is turned off (default), these dashboard tabs are removed at import,
+        # with everything in them. For tabs whose charts all show PII: hiding the
+        # charts with ASPECTS_PII_CHART_UUIDS would leave an empty tab behind.
+        (
+            "ASPECTS_PII_DASHBOARD_TABS",
+            [
+                "TAB-competency-learner",  # Competency Dashboard: Learner Assessment
+            ],
+        ),
         ("ASPECTS_ENABLE_EVENT_BUS_CONSUMER", False),
         ("ASPECTS_ENABLE_EVENT_BUS_PRODUCER", False),
         ("ASPECTS_EVENT_BUS_CONSUMER_REPLICAS", 1),

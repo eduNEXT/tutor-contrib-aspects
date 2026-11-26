@@ -787,9 +787,7 @@ position:
   TABS-competency-main:
     children:
     - TAB-competency-overview
-{% if ASPECTS_ENABLE_PII %}
     - TAB-competency-learner
-{% endif %}
     id: TABS-competency-main
     meta: {}
     parents:
@@ -828,8 +826,8 @@ position:
     - ROW-competency-s2
     - COLUMN-competency-time_to
     type: TABS
-  # Learner Assessment tab: learner names and emails, so only when PII is on.
-{% if ASPECTS_ENABLE_PII %}
+  # Learner Assessment tab: learner names and emails. create_assets.py removes it
+  # at import when PII is off (ASPECTS_PII_DASHBOARD_TABS).
   CHART-competency-progress:
     children: []
     id: CHART-competency-progress
@@ -990,7 +988,6 @@ position:
     - GRID_ID
     - TABS-competency-main
     type: TAB
-{% endif %}
 published: true
 slug: competency-dashboard
 tags:
